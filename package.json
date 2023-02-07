@@ -1,0 +1,20 @@
+{
+  "name": "dmytro",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "eslint": "^8.33.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.14.0",
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "ffmpeg": "^0.0.4",
+    "libsodium-wrappers": "^0.7.10"
+  }
+}
