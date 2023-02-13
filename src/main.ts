@@ -1,4 +1,6 @@
+import * as path from "path";
 import * as dotenv from "dotenv";
+dotenv.config({ path: path.join(__dirname, "..",".env")});
 import { Client, Events, IntentsBitField, VoiceBasedChannel } from "discord.js";
 import {
     AudioPlayer,
@@ -11,7 +13,6 @@ import {
 } from "@discordjs/voice";
 import * as dayjs from "dayjs";
 
-dotenv.config({ path: "../.env" });
 
 const cooldownStates = {
     [process.env.LEGEND]: {
