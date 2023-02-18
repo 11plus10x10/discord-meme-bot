@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as dotenv from "dotenv";
-dotenv.config({ path: path.join(__dirname, "..",".env")});
-import { Client, Events, IntentsBitField, VoiceBasedChannel } from "discord.js";
+import { Client, Events, IntentsBitField, REST, VoiceBasedChannel } from "discord.js";
 import {
     AudioPlayer,
     AudioPlayerStatus,
@@ -12,7 +11,10 @@ import {
     VoiceConnectionStatus
 } from "@discordjs/voice";
 import * as dayjs from "dayjs";
+import { badge } from "./commands/badge";
+import { Routes } from "discord-api-types/v9";
 
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const cooldownStates = {
     [process.env.LEGEND]: {
@@ -33,7 +35,7 @@ async function connectToChannel(channel: VoiceBasedChannel, whoHasConnected: str
     });
     try {
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
-        cooldownStates[whoHasConnected].timer = dayjs().add(2, "minute");
+        cooldownStates[whoHasConnected].timer = dayjs().add(3, "hour");
         cooldownStates[whoHasConnected].onCooldown = true;
         return connection;
     } catch (e) {
@@ -42,7 +44,7 @@ async function connectToChannel(channel: VoiceBasedChannel, whoHasConnected: str
     }
 }
 
-function cooldownCheck(whoToCheck: string){
+function cooldownCheck(whoToCheck: string) {
     if (dayjs().isAfter(cooldownStates[whoToCheck].timer)) cooldownStates[whoToCheck].onCooldown = false;
 }
 
@@ -53,6 +55,23 @@ function playSong(player: AudioPlayer, path: string) {
 }
 
 const client = new Client({ intents: [IntentsBitField.Flags.GuildVoiceStates, IntentsBitField.Flags.Guilds] });
+//  Registering command
+client.on("ready", async () => {
+    const rest = new REST({ version: "9" }).setToken(process.env.DISCORD_TOKEN);
+
+    await rest.put(
+        Routes.applicationGuildCommands(
+            client.user.id,
+            process.env.GUILD_ID,
+        ), { body: [badge.data.toJSON()]}
+    );
+});
+
+client.on("interactionCreate", async (interaction) => {
+    if (interaction.isCommand()) {
+        await badge.run(interaction);
+    }
+});
 
 client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
     //  Terminate if event is not triggered by one of preferred users;
